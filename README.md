@@ -80,3 +80,13 @@ The tool also offers:
 
    ```bash
    chmod +x reconkmz.sh
+# Configuration example in kmzersec.cfg:
+TOOLS_DIR="$HOME/tools"
+WORDLIST_DIR="$HOME/wordlists"
+REPORTS_DIR="$(pwd)/reports"
+TMP_DIR="$(pwd)/tmp"
+
+# API Keys (uncomment and set):
+#SHODAN_API_KEY="YOUR_SHODAN_API_KEY"
+#WHOISXML_API="YOUR_WHOISXML_API_KEY"
+#XSS_SERVER="YOUR_XSS_SERVER_KEY"
