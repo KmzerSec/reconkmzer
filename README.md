@@ -143,7 +143,6 @@ bash
 Scanning Flow
 The scanning process is designed to run sequentially as follows:
 
-plaintext
 +----------------+
 |    whatweb     |  <-- Fingerprints target
 +----------------+
@@ -186,6 +185,7 @@ plaintext
 | (Severity-based: critical,  |
 |  high, medium, low, info)   |
 +-----------------------------+
+
 As each phase runs, progress, percentage completed, and elapsed time are displayed. All results are stored in individual target folders (within the Reports directory) and later aggregated into an HTML report.
 
 Next Steps and Enhancements
