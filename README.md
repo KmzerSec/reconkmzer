@@ -80,6 +80,27 @@ The tool also offers:
 
    ```bash
    chmod +x reconkmz.sh
+./reconkmz.sh --install
+Note: XSStrike will be installed using pipx. Ensure pipx is installed by running:
+
+bash
+pip install pipx
+Aquatone Installation on Kali Linux:
+
+Download: Visit Aquatone Releases and download the latest release.
+
+Unzip:
+
+bash
+unzip aquatone_linux_amd64_1.7.0.zip
+Move Binary:
+
+bash
+sudo mv aquatone /usr/bin/
+Configuration
+Edit the configuration section (or create a file named kmzersec.cfg) to specify:
+
+bash
 # Configuration example in kmzersec.cfg:
 TOOLS_DIR="$HOME/tools"
 WORDLIST_DIR="$HOME/wordlists"
@@ -90,3 +111,100 @@ TMP_DIR="$(pwd)/tmp"
 #SHODAN_API_KEY="YOUR_SHODAN_API_KEY"
 #WHOISXML_API="YOUR_WHOISXML_API_KEY"
 #XSS_SERVER="YOUR_XSS_SERVER_KEY"
+Ensure that your API keys are properly set before running scans that require external integrations (e.g., Shodan).
+
+Usage
+ReconKmzer supports several options:
+
+Scan a Single Domain:
+
+bash
+./reconkmz.sh -d example.com
+Scan Multiple Domains (one domain per line):
+
+bash
+./reconkmz.sh -dl domains.txt
+Generate Power Wordlists for Gobuster/Nmap:
+
+bash
+./reconkmz.sh -w
+Update Tools (e.g., nuclei templates):
+
+bash
+./reconkmz.sh --update
+Generate Python Payload Tester (for XSS, SQLi, etc.):
+
+bash
+./reconkmz.sh --payload-tester
+Install Required Tools (if not already installed):
+
+bash
+./reconkmz.sh --install
+Scanning Flow
+The scanning process is designed to run sequentially as follows:
+
+plaintext
++----------------+
+|    whatweb     |  <-- Fingerprints target
++----------------+
+         |
+         v
++-----------------------------+
+| Recon & Enumeration         |
+| (Assetfinder, Knockpy, CTFR)|
++-----------------------------+
+         |
+         v
++-----------------------------+
+| Directory Fuzzing           |
+| (ffuf, wfuzz, dirsearch)    |
++-----------------------------+
+         |
+         v
++-----------------------------+
+| Vulnerability Testing       |
+| (SQLMap, Dalfox, XSStrike,   |
+|  Testssl.sh)                |
++-----------------------------+
+         |
+         v
++-----------------------------+
+| API/Secrets Discovery       |
+| (TruffleHog, Shodan, etc.)  |
++-----------------------------+
+         |
+         v
++-----------------------------+
+| Visual Recon                |
+| (Aquatone, Eyewitness,      |
+|  AutoRecon)                 |
++-----------------------------+
+         |
+         v
++-----------------------------+
+| Nuclei Scanning             |
+| (Severity-based: critical,  |
+|  high, medium, low, info)   |
++-----------------------------+
+As each phase runs, progress, percentage completed, and elapsed time are displayed. All results are stored in individual target folders (within the Reports directory) and later aggregated into an HTML report.
+
+Next Steps and Enhancements
+Integrate Additional Tools: Enhance recon by adding tools such as massdns for rapid DNS discovery, specialized server-side XSS and blind XSS scanners, and AI-powered vulnerability scanners.
+
+Adjust Parameters: Customize command-line parameters of each tool to optimize scanning based on your target’s profile or to bypass firewall restrictions.
+
+Advanced Wordlist Generation: Combine multiple wordlist sources or employ techniques to generate even more creative wordlists.
+
+Notifications: Integrate email or Slack notifications for when scans complete.
+
+Automated Updates: Expand the update routine to cover further tools and dependencies.
+
+Extended HTML Reporting: Provide charts, timelines, and detailed vulnerability information for easier bug bounty reporting.
+
+API-Key Validations: Create utilities to validate your API keys (e.g., Shodan) and ensure the integrations operate smoothly.
+
+License
+Optional: Include your open source license information here. For example, you might choose the MIT License, Apache License 2.0, etc.
+
+Contact
+For improvements, bug reports, or feature requests, please open an issue or contact the maintainer.
