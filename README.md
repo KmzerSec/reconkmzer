@@ -1,150 +1,82 @@
-# reconkmzer
-ReconKmzer  automates the entire process of reconnaissance for you. It outperforms the work of subdomain enumeration along with various vulnerability checks and obtaining maximum information about your target.
-# kmzersec - Automated Recon & Vulnerability Scanner
+# ReconKmzer
 
-**kmzersec** is an advanced Bash-based tool designed for automated recon and vulnerability scanning. It integrates a wide array of popular tools to help penetration testers, bug bounty hunters, and security researchers discover common vulnerabilities—such as information disclosure (passwords, API keys, credentials, tokens), path traversal, IDOR, CORS misconfigurations, open redirect, CVE vulnerabilities, XSS, SQLi, and subdomain takeover—on target domains.
+**ReconKmzer** is an advanced, automated reconnaissance and vulnerability scanning tool designed for bug bounty hunters and security researchers. It orchestrates a chain of powerful open-source tools to scan target domains for sensitive data exposures, repository leaks, misconfigurations, and a variety of web vulnerabilities.
 
-> **Disclaimer:**  
-> Use this tool **ONLY** on websites and networks that you are explicitly authorized to test. Unauthorized usage is illegal and unethical.
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Scanning Flow](#scanning-flow)
+- [Next Steps and Enhancements](#next-steps-and-enhancements)
+- [License](#license)
+
+---
+
+## Overview
+
+ReconKmzer automates the process of gathering vital reconnaissance data from target domains through a series of sequential steps. It employs multiple tools to fingerprint targets, enumerate subdomains, fuzz directories, test for vulnerabilities (e.g., SQL injections, XSS, path traversal, etc.), discover exposed secrets, perform visual recon, and finally, run severity-filtered scans using nuclei for vulnerability verification.
+
+The tool also offers:
+- **Resume functionality:** In the event of an interruption (e.g., a laptop shutdown), ReconKmzer will continue from where it left off.
+- **Dynamic Progress Indicators:** See percentage completion and elapsed time for each scan step.
+- **HTML Reporting:** Consolidated, detailed HTML reports are generated for each target.
+- **Wordlist Generation:** Custom “power wordlists” for tools like Gobuster and Nmap.
+- **Automatic Installation & Updates:** With the `--install` flag, the tool will verify and install all required tools (with special handling for tools such as XSStrike via pipx).
+- **Extensibility:** Easily add new scanning phases or integrate custom tools such as Aquatone for screenshots, massdns for fast DNS recon, AI vulnerability scanners, and more.
 
 ---
 
 ## Features
 
-- **Comprehensive Scanning:**  
-  - **WhatWeb:** Runs first to perform fingerprinting of the target.
-  - **Subdomain Enumeration:** Uses `subfinder` and `amass` for extensive subdomain discovery.
-  - **Directory Brute-Force:** Uses `Gobuster` with a “power wordlist” (auto-generated if no wordlist is provided) for directory and file enumeration.
-  - **Port Scanning:** Uses `Nmap` with `-Pn` to bypass firewalls.
-  - **Vulnerability Assessments:**  
-    - **SQLMap:** Scans for SQL injection vulnerabilities in high-risk mode.  
-    - **Nuclei:** Checks for vulnerabilities with severities from critical to informational.
-- **Resilient Execution:**  
-  - Checkpoint markers allow the script to resume where it left off if interrupted or upon system shutdown.
-- **Reporting:**  
-  - Generates an aggregated HTML report that consolidates all findings.
-  - Creates an advanced Python payload tester (`advanced_payload_tester.py`) for parameter-based testing (XSS, SQLi, etc.).
-- **Extensible:**  
-  - Easily add more tools (e.g., Aquatone, massdns, Nikto) and integrate additional features like notifications (Slack, email) or automated updates.
-- **Configuration:**  
-  - All configuration files and scan outputs are stored in a base folder called `reconkmzer`.
+- **Chained Scanning Phases:**  
+  1. **whatweb:** Fingerprinting  
+  2. **Recon & Enumeration:** (Assetfinder, Knockpy, CTFR/subdomain takeover)  
+  3. **Directory Fuzzing:** (ffuf, wfuzz, dirsearch with dynamic wordlists)  
+  4. **Vulnerability Testing:** (SQLMap, Dalfox, XSStrike, Testssl.sh)  
+  5. **API/Secrets Discovery:** (TruffleHog, SecretFinder, gitleaks, Shodan advanced scan)  
+  6. **Visual Recon:** (Aquatone, Eyewitness, AutoRecon)  
+  7. **Severity-based Nuclei Scanning:** (Filtering vulnerabilities by critical, high, etc.)
+
+- **Resume Functionality:** Restarts where it left off using a resume log.
+- **Dynamic Progress Display:** Shows percentage progress and elapsed time per tool.
+- **HTML Report Generation:** Consolidates output logs into a beautiful, detailed report.
+- **Power Wordlist Generation:** Merges or creates wordlists optimized for directory brute-forcing and port scanning.
+- **Automatic Tool Verification/Installation:**  
+  - Uses pipx to install XSStrike.  
+  - Optionally installs missing tools via `--install`.
+- **Extensible and Modular:** Easily integrate additional tools and scan phases.
+
+---
+
+## Requirements
+
+- A **Bash** shell (Linux, macOS, or WSL on Windows).
+- **apt-get** (or another package manager in case you adapt the install routines).
+- Python3 with **pipx** installed (for XSStrike installation).
+- Required external tools (detailed below):
+  - whatweb
+  - assetfinder
+  - knockpy
+  - ffuf, wfuzz, dirsearch
+  - sqlmap, dalfox, xsstrike, testssl.sh
+  - trufflehog
+  - aquatone (see [Aquatone Installation](#aquatone-installation-on-kali-linux))
+  - eyewitness, autorecon
+  - nuclei
 
 ---
 
 ## Installation
 
-1. **Clone the Repository:**
+1. **Clone or download this repository.**
+
+2. **Set executable permissions:**
 
    ```bash
-   git clone https://github.com/USERNAME/REPOSITORY_NAME.git
-   cd REPOSITORY_NAME
-2. Setup Configurations:
-
-Create or modify the configuration file kmzersec.cfg in the base folder (reconkmzer).
-
-Example contents for kmzersec.cfg:
-
-bash
-TOOLS_DIR="$HOME/tools"
-WORDLIST_DIR="reconkmzer/wordlists"
-REPORTS_DIR="reconkmzer/reports"
-TMP_DIR="reconkmzer/tmp"
-
-3. Setup API Keys:
-
-Create an api_keys.txt file in the base folder (reconkmzer).
-
-Example contents:
-
-shodan=YOUR_SHODAN_API_KEY
-censys=YOUR_CENSYS_API_KEY
-
-This file is used by the script to integrate external intelligence APIs.
-
-4. Install Required Tools:
-
-Ensure that the following tools are installed and available in your system PATH:
-
-whatweb
-
-gobuster
-
-nmap
-
-sqlmap
-
-nuclei
-
-amass
-
-subfinder
-
-curl
-
-python3
-
-Installation methods will vary by tool (using packages, apt, or cloning Git repositories).
-
-5. Make the Script Executable:
-
-bash
-chmod +x kmzersec.sh
-Usage
-The script supports several options to customize your scans:
-
--d: Specify a single domain.
-
--dl: Provide a file containing a list of domains (one per line).
-
--w: Supply a custom wordlist for directory scanning. If omitted, a power wordlist is auto-generated.
-
--o: Override the default output directory for reports.
-
-Examples
-Scan a Single Domain:
-
-bash
-./kmzersec.sh -d example.com -w my_wordlist.txt
-Scan Multiple Domains (using a file):
-
-bash
-./kmzersec.sh -dl domains.txt -w my_wordlist.txt
-After the scan completes, view the consolidated HTML report in the designated reports folder.
-
-How It Works
-Initialization: Displays an attractive ASCII banner and loads configuration settings and API keys.
-
-Scanning Process:
-
-WhatWeb runs first to fingerprint the target.
-
-The script then sequentially performs subdomain enumeration, directory brute-forcing, port scans, vulnerability assessments (SQLMap, Nuclei), and more.
-
-Checkpoint markers allow the script to resume from where it stopped in case of interruption.
-
-Reporting:
-
-Each scanning phase creates its own detailed output file.
-
-All results are aggregated into a single HTML report and complemented by an advanced Python payload tester.
-
-Extending kmzersec
-Future enhancements you might consider include:
-
-Additional Tools: Incorporate Aquatone for screenshots, massdns for fast DNS recon, Nikto for web server vulnerability scanning, and advanced Shodan API integrations.
-
-Notifications: Integrate email or Slack notifications upon scan completion.
-
-Auto-Installation: Create scripts to auto-install missing dependencies.
-
-Parallel Processing: Improve performance by parallelizing scans.
-
-Customized Wordlists: Develop algorithms to generate context-aware wordlists dynamically.
-
-Contributing
-Contributions are welcome! Please open an issue or submit a pull request with improvements, bug fixes, or new feature ideas. Make sure to follow best practices and document your changes.
-
-License
-This project is provided for educational and authorized penetration testing purposes only. Please refer to the LICENSE file for more details.
-
-Happy Reconning! Stay ethical and responsible.
+   chmod +x reconkmz.sh
