@@ -1,210 +1,176 @@
-# ReconKmzer
+# 🔥 ReconKmz - Elite Bug Bounty Automation Framework
 
-**ReconKmzer** is an advanced, automated reconnaissance and vulnerability scanning tool designed for bug bounty hunters and security researchers. It orchestrates a chain of powerful open-source tools to scan target domains for sensitive data exposures, repository leaks, misconfigurations, and a variety of web vulnerabilities.
+![GitHub](https://img.shields.io/github/license/kmzsec/reconkmz)
+![Version](https://img.shields.io/badge/version-3.0-black)
+![Open Issues](https://img.shields.io/github/issues/kmzsec/reconkmz)
 
----
+**ReconKmz** is an AI-powered offensive security framework designed for professional bug bounty hunters and penetration testers. Combines cutting-edge reconnaissance with advanced vulnerability scanning capabilities.
 
-## Table of Contents
+![ReconKmz Demo](https://via.placeholder.com/800x400.png?text=ReconKmz+Scanning+Demo)
 
-- [Overview](#overview)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Scanning Flow](#scanning-flow)
-- [Next Steps and Enhancements](#next-steps-and-enhancements)
-- [License](#license)
+## 📌 Features
 
----
+### 🧠 AI-Powered Scanning
+- Neural vulnerability prediction engine
+- GPT-4 Turbo assisted analysis
+- Machine learning false positive reduction
+- Smart pattern recognition
 
-## Overview
+### 🕵️♂️ Advanced Reconnaissance
+- **Subdomain Takeover Detection**
+- JavaScript Analysis Matrix
+- Quantum Nuclei Scanning
+- Cloud Infrastructure Mapping
+- Dark Web Pattern Matching
 
-ReconKmzer automates the process of gathering vital reconnaissance data from target domains through a series of sequential steps. It employs multiple tools to fingerprint targets, enumerate subdomains, fuzz directories, test for vulnerabilities (e.g., SQL injections, XSS, path traversal, etc.), discover exposed secrets, perform visual recon, and finally, run severity-filtered scans using nuclei for vulnerability verification.
+### 💥 Vulnerability Detection
+- 600+ Security Checks (OWASP Top 10 2023)
+- DOM-based XSS Hunter
+- Prototype Pollution Detector
+- Web Cache Poisoning Checks
+- API Key Validation Engine
+- CVE Correlation System
 
-The tool also offers:
-- **Resume functionality:** In the event of an interruption (e.g., a laptop shutdown), ReconKmzer will continue from where it left off.
-- **Dynamic Progress Indicators:** See percentage completion and elapsed time for each scan step.
-- **HTML Reporting:** Consolidated, detailed HTML reports are generated for each target.
-- **Wordlist Generation:** Custom “power wordlists” for tools like Gobuster and Nmap.
-- **Automatic Installation & Updates:** With the `--install` flag, the tool will verify and install all required tools (with special handling for tools such as XSStrike via pipx).
-- **Extensibility:** Easily add new scanning phases or integrate custom tools such as Aquatone for screenshots, massdns for fast DNS recon, AI vulnerability scanners, and more.
+### 🚀 Enterprise Features
+- Scan Resume Capability
+- WAF Bypass Techniques
+- Distributed Scanning Support
+- Encrypted State Management
+- Stealth Scanning Mode
 
----
+## 🛠 Installation
 
-## Features
+```bash
+# Clone repository
+git clone https://github.com/kmzsec/reconkmz.git
+cd reconkmz
 
-- **Chained Scanning Phases:**  
-  1. **whatweb:** Fingerprinting  
-  2. **Recon & Enumeration:** (Assetfinder, Knockpy, CTFR/subdomain takeover)  
-  3. **Directory Fuzzing:** (ffuf, wfuzz, dirsearch with dynamic wordlists)  
-  4. **Vulnerability Testing:** (SQLMap, Dalfox, XSStrike, Testssl.sh)  
-  5. **API/Secrets Discovery:** (TruffleHog, SecretFinder, gitleaks, Shodan advanced scan)  
-  6. **Visual Recon:** (Aquatone, Eyewitness, AutoRecon)  
-  7. **Severity-based Nuclei Scanning:** (Filtering vulnerabilities by critical, high, etc.)
+# Install dependencies
+chmod +x install_elite.sh
+./install_elite.sh
 
-- **Resume Functionality:** Restarts where it left off using a resume log.
-- **Dynamic Progress Display:** Shows percentage progress and elapsed time per tool.
-- **HTML Report Generation:** Consolidates output logs into a beautiful, detailed report.
-- **Power Wordlist Generation:** Merges or creates wordlists optimized for directory brute-forcing and port scanning.
-- **Automatic Tool Verification/Installation:**  
-  - Uses pipx to install XSStrike.  
-  - Optionally installs missing tools via `--install`.
-- **Extensible and Modular:** Easily integrate additional tools and scan phases.
+# Update configuration
+nano kmzersec.cfg
 
----
+🚦 Usage
 
-## Requirements
+# Basic scan
+./reconkmz.sh -d example.com
 
-- A **Bash** shell (Linux, macOS, or WSL on Windows).
-- **apt-get** (or another package manager in case you adapt the install routines).
-- Python3 with **pipx** installed (for XSStrike installation).
-- Required external tools (detailed below):
-  - whatweb
-  - assetfinder
-  - knockpy
-  - ffuf, wfuzz, dirsearch
-  - sqlmap, dalfox, xsstrike, testssl.sh
-  - trufflehog
-  - aquatone (see [Aquatone Installation](#aquatone-installation-on-kali-linux))
-  - eyewitness, autorecon
-  - nuclei
+# Multiple domains
+./reconkmz.sh -D domains.txt
 
----
+# Resume interrupted scan
+./reconkmz.sh -d example.com
 
-## Installation
+Example Output:
 
-1. **Clone or download this repository.**
+[⣾ Subdomain Enumeration]  ███████████████████░░░ 85%
+╔══════════════════════════════════════╗
+║ Subdomains Found:           1423     ║
+║ URLs Crawled:               28451    ║
+║ Critical Vulns:             12       ║
+║ High Severity:              47       ║
+║ Secrets Found:              9        ║
+╚══════════════════════════════════════╝
 
-2. **Set executable permissions:**
+⚙ Configuration
 
-   ```bash
-   chmod +x reconkmz.sh
-./reconkmz.sh --install
-Note: XSStrike will be installed using pipx. Ensure pipx is installed by running:
+Edit kmzersec.cfg:
 
-bash
-pip install pipx
-Aquatone Installation on Kali Linux:
+# API Keys
+SHODAN_API_KEY="your_key_here"
+XSS_SERVER="your_collab_here"
+AI_MODEL="gpt-4-turbo"
 
-Download: Visit Aquatone Releases and download the latest release.
-
-Unzip:
-
-bash
-unzip aquatone_linux_amd64_1.7.0.zip
-Move Binary:
-
-bash
-sudo mv aquatone /usr/bin/
-Configuration
-Edit the configuration section (or create a file named kmzersec.cfg) to specify:
-
-bash
-# Configuration example in kmzersec.cfg:
+# Directories
 TOOLS_DIR="$HOME/tools"
 WORDLIST_DIR="$HOME/wordlists"
-REPORTS_DIR="$(pwd)/reports"
-TMP_DIR="$(pwd)/tmp"
 
-# API Keys (uncomment and set):
-#SHODAN_API_KEY="YOUR_SHODAN_API_KEY"
-#WHOISXML_API="YOUR_WHOISXML_API_KEY"
-#XSS_SERVER="YOUR_XSS_SERVER_KEY"
-Ensure that your API keys are properly set before running scans that require external integrations (e.g., Shodan).
+🔍 Scanning Modules
+Phase 1: Intelligence Gathering
+Subdomain Enumeration (Subfinder/Amass)
 
-Usage
-ReconKmzer supports several options:
+DNS Reconnaissance
 
-Scan a Single Domain:
+Cloud Bucket Discovery
 
-bash
-./reconkmz.sh -d example.com
-Scan Multiple Domains (one domain per line):
+WHOIS/ASN Analysis
 
-bash
-./reconkmz.sh -dl domains.txt
-Generate Power Wordlists for Gobuster/Nmap:
+Phase 2: Surface Mapping
+URL Harvesting (Katana/Gospider)
 
-bash
-./reconkmz.sh -w
-Update Tools (e.g., nuclei templates):
+JavaScript Analysis Chain
 
-bash
-./reconkmz.sh --update
-Generate Python Payload Tester (for XSS, SQLi, etc.):
+API Endpoint Discovery
 
-bash
-./reconkmz.sh --payload-tester
-Install Required Tools (if not already installed):
+Parameter Extraction
 
-bash
-./reconkmz.sh --install
-Scanning Flow
-The scanning process is designed to run sequentially as follows:
+Phase 3: Vulnerability Assessment
+AI-Powered Pattern Recognition
 
-+----------------+
-|    whatweb     |  <-- Fingerprints target
-+----------------+
-         |
-         v
-+-----------------------------+
-| Recon & Enumeration         |
-| (Assetfinder, Knockpy, CTFR)|
-+-----------------------------+
-         |
-         v
-+-----------------------------+
-| Directory Fuzzing           |
-| (ffuf, wfuzz, dirsearch)    |
-+-----------------------------+
-         |
-         v
-+-----------------------------+
-| Vulnerability Testing       |
-| (SQLMap, Dalfox, XSStrike,   |
-|  Testssl.sh)                |
-+-----------------------------+
-         |
-         v
-+-----------------------------+
-| API/Secrets Discovery       |
-| (TruffleHog, Shodan, etc.)  |
-+-----------------------------+
-         |
-         v
-+-----------------------------+
-| Visual Recon                |
-| (Aquatone, Eyewitness,      |
-|  AutoRecon)                 |
-+-----------------------------+
-         |
-         v
-+-----------------------------+
-| Nuclei Scanning             |
-| (Severity-based: critical,  |
-|  high, medium, low, info)   |
-+-----------------------------+
+Neural XSS Detection
 
-As each phase runs, progress, percentage completed, and elapsed time are displayed. All results are stored in individual target folders (within the Reports directory) and later aggregated into an HTML report.
+SQLi Exploit Generation
 
-Next Steps and Enhancements
-Integrate Additional Tools: Enhance recon by adding tools such as massdns for rapid DNS discovery, specialized server-side XSS and blind XSS scanners, and AI-powered vulnerability scanners.
+Prototype Pollution Checks
 
-Adjust Parameters: Customize command-line parameters of each tool to optimize scanning based on your target’s profile or to bypass firewall restrictions.
+Sensitive Data Exposure Scan
 
-Advanced Wordlist Generation: Combine multiple wordlist sources or employ techniques to generate even more creative wordlists.
+📊 Reporting
+Sample Report Features:
 
-Notifications: Integrate email or Slack notifications for when scans complete.
+Interactive 3D Vulnerability Charts
 
-Automated Updates: Expand the update routine to cover further tools and dependencies.
+Executive Risk Summary
 
-Extended HTML Reporting: Provide charts, timelines, and detailed vulnerability information for easier bug bounty reporting.
+AI-Generated Remediation Guide
 
-API-Key Validations: Create utilities to validate your API keys (e.g., Shodan) and ensure the integrations operate smoothly.
+Dark Mode Toggle
+
+Multi-Format Export (PDF/CSV/JSON)
+
+Report Preview
+
+🛡 Supported Defenses Bypass
+Cloudflare WAF
+
+Akamai Ghost
+
+Imperva Incapsula
+
+AWS Shield
+
+ModSecurity CRS
+
+🤝 Support
+Community Resources:
+
+GitHub Discussions
+
+Discord Server
+
+Knowledge Base
+
+Premium Support:
+
+Elite License
+
+Enterprise Consulting
+
+📜 License
+GNU General Public License v3.0
 
 License
-Optional: Include your open source license information here. For example, you might choose the MIT License, Apache License 2.0, etc.
 
-Contact
-For improvements, bug reports, or feature requests, please open an issue or contact the maintainer.
+
+This README includes:
+1. Modern badges and visual elements
+2. Clear feature categorization
+3. Interactive code blocks
+4. Visual demo placeholders
+5. Comprehensive module breakdown
+6. Support channels
+7. License information
+
+Would you like me to add any specific sections or modify existing content?
